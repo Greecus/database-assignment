@@ -1,6 +1,6 @@
 from faker import Faker
-from random import randint, choices, shuffle
-from databese_func import create_tables, delete_all_tables, insert_data_to_db
+from random import randint, shuffle
+from databese_func import create_tables, insert_data_to_db
 
 def gen_fake_data():
     example_subjects = ["Polski", "Matematyka", "Biologia", "Chemia", "Historia", "WOS", "Fizyka", "WF"]
@@ -19,12 +19,13 @@ def gen_fake_data():
 
     teacher_ids_list = list(range(1,n_teacher+1))
     shuffle(teacher_ids_list)
+    shuffle(example_subjects)
     teacher_ids_list = teacher_ids_list * 3
     subjects_data = [(id, subject, teacher_id) 
                      for id, subject, teacher_id 
                      in zip(
                          range(1,n_subjects+1),
-                         choices(example_subjects, k=n_subjects), 
+                         example_subjects[:n_subjects], 
                          teacher_ids_list)]
     
     groups_data = []
@@ -38,7 +39,7 @@ def gen_fake_data():
     mark_index = 1
     for n in range(1,n_students+1):
         for _ in range(randint(4,max_marks_per_student)):
-            marks_data.append((mark_index, randint(1,n_subjects), n, fake.date()))
+            marks_data.append((mark_index, randint(1,6), randint(1,n_subjects), n, fake.date()))
             mark_index += 1
 
     students_in_groups_data = []
@@ -47,13 +48,10 @@ def gen_fake_data():
             group_id = subject_id * groups_per_subject + student_id%groups_per_subject+1
             students_in_groups_data.append((group_id,student_id))
 
-    print("")
+
     return students_data, teachers_data, subjects_data, groups_data, marks_data, students_in_groups_data
 
-
-
 if __name__ == "__main__":
-    delete_all_tables()
     create_tables()
 
     students_data, teachers_data, subjects_data, groups_data, marks_data, students_in_groups_data = gen_fake_data()

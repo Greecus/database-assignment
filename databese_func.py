@@ -26,6 +26,7 @@ FOREIGN KEY (przedmiot_id) REFERENCES Przedmioty(przedmiot_id)
 
 create table Oceny(
 ocena_id int not null primary key,
+ocena INT CHECK (ocena BETWEEN 1 AND 6),
 przedmiot_id int,
 student int,
 data DATE not null,
@@ -47,6 +48,13 @@ FOREIGN KEY (grupa_id) REFERENCES Grupy(grupa_id)
 	on update cascade);
 """
 
+connection_params = {
+        'dbname': 'postgres',
+        'user': 'postgres',
+        'password': 'password',
+        'host': 'localhost',
+        'port': '5432'}
+
 def delete_all_tables():
     delete_tables_sql = """
         drop table StudenciWGrupach;
@@ -61,12 +69,6 @@ def delete_all_tables():
 
         drop table Studenci;"""
     
-    connection_params = {
-        'dbname': 'postgres',
-        'user': 'postgres',
-        'password': 'password',
-        'host': 'localhost',
-        'port': '5432'}
     
     
     with psycopg2.connect(**connection_params) as conn:
@@ -78,25 +80,11 @@ def delete_all_tables():
 
 
 def create_tables():
-    connection_params = {
-        'dbname': 'postgres',
-        'user': 'postgres',
-        'password': 'password',
-        'host': 'localhost',
-        'port': '5432'}
-    
     with psycopg2.connect(**connection_params) as conn:
         cur = conn.cursor()
         cur.execute(DATABASE)
 
 def insert_data_to_db(students_data, teachers_data, subjects_data, groups_data, marks_data, students_in_groups_data):
-    connection_params = {
-        'dbname': 'postgres',
-        'user': 'postgres',
-        'password': 'password',
-        'host': 'localhost',
-        'port': '5432'}
-    
     with psycopg2.connect(**connection_params) as conn:
         cur = conn.cursor()
         
@@ -108,6 +96,6 @@ def insert_data_to_db(students_data, teachers_data, subjects_data, groups_data, 
 
         cur.executemany("INSERT INTO Grupy (grupa_id, przedmiot_id) VALUES (%s, %s)", groups_data)
 
-        cur.executemany("INSERT INTO Oceny (ocena_id, przedmiot_id, student, data) VALUES (%s, %s, %s, %s)", marks_data)
+        cur.executemany("INSERT INTO Oceny (ocena_id, ocena, przedmiot_id, student, data) VALUES (%s, %s, %s, %s, %s)", marks_data)
 
         cur.executemany("INSERT INTO StudenciWGrupach (grupa_id, student_id) VALUES (%s, %s)", students_in_groups_data)
