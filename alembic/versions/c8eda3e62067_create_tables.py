@@ -10,9 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from sqlalchemy import String
-from sqlalchemy import Integer
-from sqlalchemy import Column
+from sqlalchemy import String, Date, Column, Integer
 from sqlalchemy import ForeignKeyConstraint
 
 # revision identifiers, used by Alembic.
@@ -48,7 +46,7 @@ def upgrade() -> None:
         Column("ocena",Integer),
         Column("przedmiot_id",Integer),
         Column("student",Integer),
-        Column("data",Integer),
+        Column("data",Date),
         ForeignKeyConstraint(["przedmiot_id"],["Przedmioty.przedmiot_id"],ondelete="CASCADE"),
         ForeignKeyConstraint(["student"],["Studenci.student_id"],ondelete="CASCADE")
     )
